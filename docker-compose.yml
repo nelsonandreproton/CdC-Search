@@ -1,0 +1,63 @@
+# ============================================================================
+# CdC-Search — orquestração para o Hetzner
+#
+#   docker compose up -d                      # caddy + web (site público)
+#   docker compose --profile llm up -d        # + gateway LLM (rede interna)
+#   docker compose --profile ingest run --rm ingest   # recolha manual (ou via cron)
+#
+# Notas de segurança:
+#   - Só o Caddy publica portas (80/443). O 'web' e o 'gateway' NÃO expõem
+#     portas para o exterior — só são acessíveis dentro da rede do compose.
+#   - O gateway LLM nunca é exposto à internet.
+# ============================================================================
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - app_data:/data
+    expose:
+      - "8000"
+    # Sem 'ports:' — acessível apenas via caddy.
+
+  # Recolha diária. Não arranca com 'up'; é invocado pelo cron do host.
+  ingest:
+    build: .
+    profiles: ["ingest"]
+    env_file: .env
+    command: ["python", "-m", "scripts.run_ingest"]
+    volumes:
+      - app_data:/data
+
+  # LLM gateway (free-llm-gateway). Opcional, na rede interna.
+  # Clona o repo para ./gateway antes de usar o profile 'llm':
+  #   git clone https://github.com/MrFadiAi/free-llm-gateway.git gateway
+  # e cria ./gateway/.env com as chaves dos providers (Groq, Gemini, ...).
+  gateway:
+    build: ./gateway
+    profiles: ["llm"]
+    restart: unless-stopped
+    env_file: ./gateway/.env
+    expose:
+      - "8080"
+    # Sem 'ports:' — nunca exposto à internet.
+
+volumes:
+  app_data:
+  caddy_data:
+  caddy_config:

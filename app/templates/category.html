@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — {{ site_name }}{% endblock %}
+{% block content %}
+<nav class="breadcrumb"><a href="/">Início</a> / {{ category.name }}</nav>
+
+<section class="hero">
+  <h1>{{ category.icon }} {{ category.name }}</h1>
+  <p>{{ category.description }}</p>
+</section>
+
+<section class="listing">
+  {% for biz in businesses %}
+  <article class="business-row">
+    <div class="business-main">
+      <a class="business-name" href="/empresa/{{ biz.slug }}">{{ biz.name }}</a>
+      {% if biz.address %}<p class="business-address">{{ biz.address }}</p>{% endif %}
+    </div>
+    <div class="business-meta">
+      {% if biz.rating %}<span class="rating">★ {{ "%.1f"|format(biz.rating) }}
+        {% if biz.user_ratings_total %}({{ biz.user_ratings_total }}){% endif %}</span>{% endif %}
+      {% if biz.phone %}<a href="tel:{{ biz.phone }}">{{ biz.phone }}</a>{% endif %}
+    </div>
+  </article>
+  {% else %}
+  <p class="empty">Sem empresas nesta categoria.</p>
+  {% endfor %}
+</section>
+{% endblock %}

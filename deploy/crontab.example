@@ -1,0 +1,6 @@
+# Recolha diária do CdC-Search.
+# Instala com:  crontab deploy/crontab.example   (ajusta o caminho do projeto)
+#
+# Corre todos os dias às 04:30 e regista o output.
+
+30 4 * * * cd /opt/CdC-Search && /usr/bin/docker compose --profile ingest run --rm ingest >> /var/log/cdc-ingest.log 2>&1

@@ -1,0 +1,7 @@
+# Substitui "example.com" pelo teu domínio. O Caddy trata do HTTPS (Let's
+# Encrypt) automaticamente. Para testes locais, usa ":80" em vez do domínio.
+
+example.com {
+	encode gzip
+	reverse_proxy web:8000
+}

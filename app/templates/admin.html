@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Admin — {{ site_name }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Painel de recolha</h1>
+  <p>Histórico das execuções e disparo manual.</p>
+</section>
+
+{% set msg = request.query_params.get('msg') %}
+{% if msg == 'iniciada' %}
+  <p class="notice ok">Recolha iniciada em background. Atualiza a página dentro de alguns minutos.</p>
+{% elif msg == 'ja-a-correr' %}
+  <p class="notice warn">Já existe uma recolha em curso — não foi iniciada outra.</p>
+{% endif %}
+
+<form class="ingest-form" action="/admin/ingest" method="post">
+  <input type="hidden" name="token" value="{{ token }}">
+  <button type="submit" {% if running %}disabled{% endif %}>
+    {% if running %}Recolha em curso…{% else %}▶ Iniciar recolha agora{% endif %}
+  </button>
+</form>
+
+<section class="listing">
+  <h2>Últimas execuções</h2>
+  <table class="runs">
+    <thead>
+      <tr>
+        <th>Início</th><th>Fim</th><th>Estado</th>
+        <th>Novas</th><th>Atualizadas</th><th>Vistas</th><th>Log</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in runs %}
+      <tr class="run-{{ r.status }}">
+        <td>{{ r.started_at.strftime('%Y-%m-%d %H:%M') if r.started_at }}</td>
+        <td>{{ r.finished_at.strftime('%H:%M') if r.finished_at else '—' }}</td>
+        <td><span class="badge {{ r.status }}">{{ r.status }}</span></td>
+        <td>{{ r.new_count }}</td>
+        <td>{{ r.updated_count }}</td>
+        <td>{{ r.seen_count }}</td>
+        <td><pre class="log">{{ r.log }}</pre></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty">Sem execuções ainda.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
