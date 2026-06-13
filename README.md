@@ -143,6 +143,17 @@ atualizadas, vistas e log) e tem um botão para **disparar a recolha em
 background**. Execuções sobrepostas são bloqueadas (se já houver uma a correr,
 não inicia outra). Sem `ADMIN_TOKEN` definido, o `/admin` devolve 403.
 
+## SEO
+
+- **`/sitemap.xml`** — gerado dinamicamente (início, categorias e fichas
+  ativas, com `lastmod`). Usa `SITE_BASE_URL` do `.env` para os URLs absolutos.
+- **`/robots.txt`** — permite indexação, bloqueia `/admin` e aponta para o
+  sitemap.
+
+As fichas de empresa incluem um **mapa** (OpenStreetMap, sem chave nem
+JavaScript) quando há coordenadas. Há um link discreto para o `/admin` no
+rodapé.
+
 ## Personalizar
 
 - **Localização / raio** — `TARGET_*` no `.env`.

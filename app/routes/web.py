@@ -3,8 +3,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from xml.sax.saxutils import escape
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -73,6 +75,36 @@ def business_page(
     if biz is None:
         raise HTTPException(status_code=404, detail="Empresa não encontrada")
     return templates.TemplateResponse("business.html", _ctx(request, biz=biz))
+
+
+@router.get("/sitemap.xml", include_in_schema=False)
+def sitemap(session: Session = Depends(get_session)) -> Response:
+    base = settings.site_base_url.rstrip("/")
+    parts = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+
+    def _url(loc: str, lastmod: str | None = None) -> str:
+        tag = f"<url><loc>{escape(loc)}</loc>"
+        if lastmod:
+            tag += f"<lastmod>{lastmod}</lastmod>"
+        return tag + "</url>"
+
+    parts.append(_url(f"{base}/"))
+    for cat in session.scalars(select(Category).order_by(Category.sort_order)):
+        parts.append(_url(f"{base}/categoria/{cat.slug}"))
+    for biz in session.scalars(select(Business).where(Business.active.is_(True))):
+        lastmod = biz.updated_at.date().isoformat() if biz.updated_at else None
+        parts.append(_url(f"{base}/empresa/{biz.slug}", lastmod))
+
+    parts.append("</urlset>")
+    return Response(content="\n".join(parts), media_type="application/xml")
+
+
+@router.get("/robots.txt", include_in_schema=False)
+def robots() -> Response:
+    base = settings.site_base_url.rstrip("/")
+    body = f"User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: {base}/sitemap.xml\n"
+    return Response(content=body, media_type="text/plain")
 
 
 @router.get("/pesquisa", response_class=HTMLResponse)

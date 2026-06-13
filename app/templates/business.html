@@ -26,6 +26,16 @@
   </ul>
   {% endif %}
 
+  {% if biz.latitude and biz.longitude %}
+  {% set d = 0.004 %}
+  <h2>Localização</h2>
+  <iframe
+    class="map"
+    loading="lazy"
+    title="Mapa de {{ biz.name }}"
+    src="https://www.openstreetmap.org/export/embed.html?bbox={{ biz.longitude - d }}%2C{{ biz.latitude - d }}%2C{{ biz.longitude + d }}%2C{{ biz.latitude + d }}&layer=mapnik&marker={{ biz.latitude }}%2C{{ biz.longitude }}"></iframe>
+  {% endif %}
+
   <p class="links">
     {% if biz.google_maps_url %}<a href="{{ biz.google_maps_url }}" rel="nofollow noopener" target="_blank">Ver no Google Maps</a>{% endif %}
     {% if biz.racius_url %}<a href="{{ biz.racius_url }}" rel="nofollow noopener" target="_blank">Ficha racius.com</a>{% endif %}
