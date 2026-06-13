@@ -51,9 +51,16 @@ nenhum dado sensível sai do servidor. O dashboard do gateway não é publicado.
      servidor Hetzner).
    - Coloca-a em `GOOGLE_MAPS_API_KEY` no `.env`.
 
-2. **Chaves dos providers do LLM** (opcional, mas recomendado)
-   - O gateway agrega providers gratuitos (Groq, Gemini, etc.). Cria chaves
-     gratuitas nesses providers e configura-as em `./gateway/.env`.
+2. **Chaves dos providers do LLM** (Groq + NVIDIA NIM)
+   - O gateway recebe as chaves em `gateway/.env`:
+     - `GROQ_KEY` — a tua chave Groq
+     - `NVIDIA_NIM_KEY` — a tua chave NVIDIA NIM
+     - `MASTER_KEY` — chave interna do gateway; tem de ser **igual** a
+       `LLM_GATEWAY_API_KEY` no `.env` raiz.
+   - Há um template pronto: `deploy/gateway.env.example`.
+   - O modelo lógico `LLM_MODEL=llama-3.3-70b` usa o **Groq como primário** e o
+     **NVIDIA NIM como fallback** (definido em `gateway/models.yaml` — confirma
+     a cadeia, ver template).
    - Se não quiseres LLM, define `LLM_ENABLED=false` no `.env` — a
      categorização usa apenas os tipos da Google.
 
@@ -86,9 +93,11 @@ cp .env.example .env
 nano .env                      # GOOGLE_MAPS_API_KEY, SITE_BASE_URL, ...
 nano Caddyfile                 # troca example.com pelo teu domínio
 
-# 2. (Opcional) LLM gateway
+# 2. LLM gateway (Groq + NVIDIA NIM)
 git clone https://github.com/MrFadiAi/free-llm-gateway.git gateway
-nano gateway/.env              # chaves dos providers (Groq, Gemini, ...)
+cp deploy/gateway.env.example gateway/.env
+nano gateway/.env              # GROQ_KEY, NVIDIA_NIM_KEY, MASTER_KEY
+# confirma que gateway/models.yaml mapeia "llama-3.3-70b" -> groq + nvidia
 
 # 3. Arrancar
 docker compose up -d                      # caddy + web

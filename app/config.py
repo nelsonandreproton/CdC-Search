@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # LLM Gateway
     llm_gateway_url: str = "http://gateway:8080/v1"
     llm_gateway_api_key: str = "change-me-internal-key"
-    llm_model: str = "llama-3.3-70b-versatile"
+    llm_model: str = "llama-3.3-70b"
     llm_enabled: bool = True
 
     # racius.com
