@@ -130,6 +130,19 @@ Encrypt).
    `CLOSED_PERMANENTLY`) ficam `active = false`.
 6. **Auditoria** — cada execução fica registada em `ingest_runs`.
 
+## Painel de administração
+
+Define um `ADMIN_TOKEN` forte no `.env` (ex.: `openssl rand -hex 24`) e acede a:
+
+```
+https://o-teu-dominio/admin?token=<ADMIN_TOKEN>
+```
+
+O painel mostra o **histórico de execuções** (`ingest_runs`: estado, novas,
+atualizadas, vistas e log) e tem um botão para **disparar a recolha em
+background**. Execuções sobrepostas são bloqueadas (se já houver uma a correr,
+não inicia outra). Sem `ADMIN_TOKEN` definido, o `/admin` devolve 403.
+
 ## Personalizar
 
 - **Localização / raio** — `TARGET_*` no `.env`.

@@ -35,5 +35,8 @@ class Settings(BaseSettings):
     site_name: str = "Diretório de Casal de Cambra"
     site_base_url: str = "https://example.com"
 
+    # Admin (painel + disparo manual da recolha). Vazio = admin desativado.
+    admin_token: str = ""
+
 
 settings = Settings()
