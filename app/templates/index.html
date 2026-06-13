@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Empresas de {{ target_name }}</h1>
+  <p>{{ total }} empresas listadas, organizadas por categoria.</p>
+</section>
+
+<section class="categories">
+  <div class="card-grid">
+    {% for category, count in categories %}
+    <a class="card category-card" href="/categoria/{{ category.slug }}">
+      <span class="card-icon">{{ category.icon }}</span>
+      <span class="card-title">{{ category.name }}</span>
+      <span class="card-count">{{ count }}</span>
+    </a>
+    {% else %}
+    <p class="empty">Ainda não há empresas. Corre o pipeline de recolha.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

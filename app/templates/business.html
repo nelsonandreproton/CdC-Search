@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ biz.name }} — {{ site_name }}{% endblock %}
+{% block content %}
+<nav class="breadcrumb">
+  <a href="/">Início</a>
+  {% if biz.category %} / <a href="/categoria/{{ biz.category.slug }}">{{ biz.category.name }}</a>{% endif %}
+  / {{ biz.name }}
+</nav>
+
+<article class="business-detail">
+  <h1>{{ biz.name }}</h1>
+  {% if biz.category %}<p class="tag">{{ biz.category.icon }} {{ biz.category.name }}</p>{% endif %}
+
+  <dl class="details">
+    {% if biz.address %}<dt>Morada</dt><dd>{{ biz.address }}</dd>{% endif %}
+    {% if biz.phone %}<dt>Telefone</dt><dd><a href="tel:{{ biz.phone }}">{{ biz.phone }}</a></dd>{% endif %}
+    {% if biz.website %}<dt>Website</dt><dd><a href="{{ biz.website }}" rel="nofollow noopener" target="_blank">{{ biz.website }}</a></dd>{% endif %}
+    {% if biz.rating %}<dt>Avaliação</dt><dd>★ {{ "%.1f"|format(biz.rating) }}{% if biz.user_ratings_total %} ({{ biz.user_ratings_total }} avaliações){% endif %}</dd>{% endif %}
+    {% if biz.nif %}<dt>NIF</dt><dd>{{ biz.nif }}</dd>{% endif %}
+  </dl>
+
+  {% if biz.opening_hours %}
+  <h2>Horário</h2>
+  <ul class="hours">
+    {% for line in biz.opening_hours %}<li>{{ line }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  <p class="links">
+    {% if biz.google_maps_url %}<a href="{{ biz.google_maps_url }}" rel="nofollow noopener" target="_blank">Ver no Google Maps</a>{% endif %}
+    {% if biz.racius_url %}<a href="{{ biz.racius_url }}" rel="nofollow noopener" target="_blank">Ficha racius.com</a>{% endif %}
+  </p>
+</article>
+{% endblock %}

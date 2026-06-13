@@ -1,0 +1,20 @@
+# Ambiente
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Dados / base de dados
+data/
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
